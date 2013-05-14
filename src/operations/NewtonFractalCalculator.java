@@ -49,13 +49,15 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 	/**
 	 * Attributes for plot parameters
 	 */
-	private double range, stepSize, calculationSteps;
+	private double range, stepSize, calculationSteps, totalSteps;
 	
 	/**
 	 * Stores the size of the image and the index of
 	 * the current color
 	 */
 	private int size, colorCnt = 0;
+	
+	private long started, ended;
 	
 	/**
 	 * The resulting image
@@ -165,10 +167,21 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 		return roots;
 	}
 	
+	/**
+	 * Returns the current result image
+	 * 
+	 * @return May be not finished yet
+	 */
+	public BufferedImage getImage() {
+		return resultImage;
+	}
+	
 	@Override
 	protected BufferedImage doInBackground() throws Exception {
 		int xcnt = 0, ycnt = 0;
-		double i = 0;
+		totalSteps = 0;
+		started = System.currentTimeMillis();
+		ended = -1;
 		
 		// Loop through the image area and calculate for every
 		// point the root
@@ -183,7 +196,7 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 				double[] r = AutoDerivateNewton.newton(f, new double[] {x, y});
 				resultImage.setRGB(xcnt, ycnt, getColor(r));
 				xcnt++;
-				super.setProgress((int) Math.round(100f*(i++)/calculationSteps));
+				super.setProgress((int) Math.round(100f*(totalSteps++)/calculationSteps));
 			}
 			
 			xcnt = 0;
@@ -191,7 +204,18 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 		}
 		
 		super.setProgress(100);
+		ended = System.currentTimeMillis();
 		return resultImage;
+	}
+	
+	@Override
+	public String toString() {
+		double steps = Math.round(totalSteps/((
+				(ended < 0 ? System.currentTimeMillis() : ended)-started)/1000.0));
+		
+		return getProgress() + "% (" + Math.round(totalSteps)
+				+ " / " + Math.round(calculationSteps) + ") @ "
+				+ steps + " ops (" + size + " px)";
 	}
 	
 }
