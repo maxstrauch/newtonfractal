@@ -15,6 +15,7 @@
  */
 package operations;
  
+import helpers.SimpleComplexMath;
 import helpers.SimpleForm;
 
 import java.awt.BorderLayout;
@@ -41,6 +42,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
 
@@ -104,7 +106,7 @@ public class NewtonFractal extends JPanel implements ActionListener, PropertyCha
         range.setValue(new Double(1.0));
         steps.setValue(new Double(0.01));
         f.setText("x^3-1");
-        fd.setText("3*x^2");
+//        fd.setText("3*x^2");
     }
     
     /**
@@ -153,7 +155,7 @@ public class NewtonFractal extends JPanel implements ActionListener, PropertyCha
         // Create the main form on the right side
         add(new SimpleForm().
     		addLabel("f(x)=").addLastField(f).
-    		addLabel("f'(x)=").addLastField(fd).
+    		/*addLabel("f'(x)=").addLastField(fd).*/
     		addLabel("Plot range:").addLastField(range).
     		addLabel("Step size:").addLastField(steps).
     		addSeperator("Calculation").
@@ -193,7 +195,7 @@ public class NewtonFractal extends JPanel implements ActionListener, PropertyCha
         		// Create a new task instance
         		task = new NewtonFractalCalculator(
         				f.getText(), 
-        				fd.getText(), 
+        				/*fd.getText(), */
         				(Double) range.getValue(), 
         				(Double) steps.getValue(),
         				this
@@ -285,7 +287,7 @@ public class NewtonFractal extends JPanel implements ActionListener, PropertyCha
         	StringBuffer buf = new StringBuffer();
         	buf.append("<html><body>");
         	for (int i = 0; i < roots.length; i++) {
-        		if ((num = NewtonComplex.formatComplex(roots[i])) != null) {
+        		if ((num = SimpleComplexMath.formatComplex(roots[i])) != null) {
         			int c = task.getColor(roots[i]);
         			buf.append("<span bgcolor=\"#" +Integer.toHexString(c)  +
         						"\">x<sub>" + e++ + "</sub></span><b> = " + 
@@ -321,6 +323,13 @@ public class NewtonFractal extends JPanel implements ActionListener, PropertyCha
     }
  
     public static void main(String[] args) {
+    	System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Newton fractal");
+    	try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			// Ignore
+		}
+    	
         // Schedule a job for the event-dispatching thread:
         // creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

@@ -15,6 +15,7 @@
  */
 package operations;
 
+
 /**
  * Simple implementation of the Netwon method to work with
  * the formula parser in {@link ComplexMathParser} and complex
@@ -22,8 +23,9 @@ package operations;
  * 
  * @author maxstrauch
  */
+@Deprecated
 public class NewtonComplex {
-
+	
 	/**
 	 * The Newton method implementation for complex numbers
 	 * 
@@ -34,6 +36,7 @@ public class NewtonComplex {
 	 * @return The resulting complex number calculated by the Newtons
 	 * method
 	 */
+	@Deprecated
 	public static double[] newton(String f, String fd, double[] start) {
 		// Check if start value is null
 		if (Math.abs(start[0]) + Math.abs(start[1]) < 1e-8)
@@ -75,32 +78,6 @@ public class NewtonComplex {
 		
 		// Return the "real" result
 		return x0;
-	}
-	
-	/**
-	 * Formats a complex number represented by a 1d array
-	 * field with two fields filled
-	 * 
-	 * @param c The array field which represents a complex
-	 * number
-	 * @return <code>null</code> if the complex number is 
-	 * Double.NaN (re and im) or the input array has not exactly
-	 * two fields. Otherwise the string representation of the
-	 * complex number is returned
-	 */
-	public static String formatComplex(double[] c) {
-		if (c.length != 2 || Double.isNaN(c[0]) || Double.isNaN(c[1]))
-			return null;
-		
-		// Round input
-		double[] r = new double[] {
-				Math.round(c[0]*1000.0)/1000.0,
-				Math.round(c[1]*1000.0)/1000.0
-		};
-		
-		// Build string
-		return (r[0] == 0.0 ? "" : r[0]) + " " + (r[1] == 0.0 ? "" : 
-			(r[1] < 0 ? "-" : "+") + " " + Math.abs(r[1]) + " i");
 	}
 	
 }

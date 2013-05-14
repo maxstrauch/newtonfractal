@@ -19,7 +19,6 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.swing.SwingWorker;
 
@@ -66,7 +65,7 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 	/**
 	 * The function to work on
 	 */
-	private String f, fd;
+	private String f/*, fd*/;
 	
 	/**
 	 * Color index
@@ -87,18 +86,18 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 	 * bigger (depending on your CPU)
 	 * @param pcl The {@link PropertyChangeListener} to attach
 	 */
-	public NewtonFractalCalculator(String f, String fd, double rangeOffset, 
+	public NewtonFractalCalculator(String f, /*String fd,*/ double rangeOffset, 
 			double stepSize, PropertyChangeListener pcl) {
 		
 		// Input check
-		if (!f.matches(INPUT_PATTERN) || !fd.matches(INPUT_PATTERN) || 
+		if (!f.matches(INPUT_PATTERN)/* || !fd.matches(INPUT_PATTERN)*/ || 
 				rangeOffset < 0 || stepSize < 0 || stepSize > rangeOffset)
 			throw new IllegalArgumentException("At least one of the " +
 					"supplied arguments is bad");
 		
 		// Set attributes
 		this.f = f;
-		this.fd = fd;
+//		this.fd = fd;
 		this.range = rangeOffset;
 		this.stepSize = stepSize;
 		
@@ -112,6 +111,7 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 		// Create the color index
 		colorIndex = new HashMap<double[], Integer>();
 		colorIndex.put(new double[] {Double.NaN, Double.NaN}, 0x0);
+		colorIndex.put(new double[] {0, 0}, 0x0);
 		
 		// Add the property change listener
 		addPropertyChangeListener(pcl);
@@ -151,8 +151,18 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 	 * NaN
 	 */
 	public double[][] getRoots() {
-		Set<double[]> s = colorIndex.keySet();
-		return s.toArray(new double[s.size()][2]);
+		double[][] roots = new double[0][];
+		
+		for (double[] r : colorIndex.keySet()) {
+			if (!Double.isNaN(r[0]) && !Double.isNaN(r[1]) && 
+					!(r[0] == 0 && r[1] == 0)) {
+				System.arraycopy(roots, 0, roots = new double[roots.length+1][], 
+						0, roots.length-1);
+				roots[roots.length-1] = r;
+			}
+		}
+		
+		return roots;
 	}
 	
 	@Override
@@ -170,9 +180,8 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 				if (xcnt >= size)
 					continue;
 				
-				double[] r = NewtonComplex.newton(f, fd, new double[] {x, y});
+				double[] r = AutoDerivateNewton.newton(f, new double[] {x, y});
 				resultImage.setRGB(xcnt, ycnt, getColor(r));
-				
 				xcnt++;
 				super.setProgress((int) Math.round(100f*(i++)/calculationSteps));
 			}
