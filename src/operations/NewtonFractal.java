@@ -196,14 +196,16 @@ public class NewtonFractal extends JPanel implements ActionListener, PropertyCha
         		task = new NewtonFractalCalculator(
         				f.getText(), 
         				/*fd.getText(), */
-        				(Double) range.getValue(), 
-        				(Double) steps.getValue(),
+        				Double.valueOf(String.valueOf(range.getValue())),
+        				Double.valueOf(String.valueOf(steps.getValue())),
         				this
-          		);
+        		);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this, 
 						"Couldn't generate an image (" + e + ")", 
 						"Error", JOptionPane.ERROR_MESSAGE);
+				
+				e.printStackTrace();
 				
 				// Reset properties
 				task = null;
