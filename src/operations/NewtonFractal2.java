@@ -149,11 +149,11 @@ public class NewtonFractal2 extends JPanel implements ActionListener, PropertyCh
 		
 		zoomSize = new JComboBox<Double>(ZOOM_SIZES);
 		
-		startButton = new JButton("Eval");
+		startButton = new JButton("Run");
 		startButton.setActionCommand("start");
 		startButton.addActionListener(this);
 
-		exportBtn = new JButton("Export");
+		exportBtn = new JButton("Save");
 		exportBtn.setActionCommand("export");
 		exportBtn.addActionListener(this);
 		exportBtn.setEnabled(false);
@@ -199,8 +199,15 @@ public class NewtonFractal2 extends JPanel implements ActionListener, PropertyCh
     protected void paintComponent(Graphics g) {
     	super.paintComponent(g);
     	
-    	g.setColor(Color.white);
-    	g.fillRect(0, 0, getWidth(), getHeight());
+    	// Paint the background
+    	int s = 20;
+		for (int j = 0; j <= getHeight()/s; j++) {
+			for (int i = 0; i < getWidth()/s; i++) {
+				g.setColor((i+j)%2 == 0 ? new Color(0xeeeeee) : 
+					new Color(0xffffff));
+				g.fillRect(i*s, j*s, s, s);
+			}
+		}
     	
     	// Set dimensions
     	mainDimension = new Dimension(getWidth(), getHeight());
@@ -220,9 +227,6 @@ public class NewtonFractal2 extends JPanel implements ActionListener, PropertyCh
 		g.drawString(str, 15, 25);
 		g.setColor(Color.green);
 		g.drawString(str, 14, 24);
-    	
-//    	// Repaint the preview
-//    	previewPane.repaint();
     }
 
     /**
