@@ -26,6 +26,8 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -219,8 +221,8 @@ public class NewtonFractal2 extends JPanel implements ActionListener, PropertyCh
 		g.setColor(Color.green);
 		g.drawString(str, 14, 24);
     	
-    	// Repaint the preview
-    	previewPane.repaint();
+//    	// Repaint the preview
+//    	previewPane.repaint();
     }
 
     /**
@@ -377,11 +379,18 @@ public class NewtonFractal2 extends JPanel implements ActionListener, PropertyCh
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         // Create and set up the content pane
-        JComponent newContentPane = new NewtonFractal2();
+        final NewtonFractal2 newContentPane = new NewtonFractal2();
         newContentPane.setOpaque(true);
         frame.setContentPane(newContentPane);
  
         // Display the window
+        frame.addComponentListener(new ComponentAdapter() {
+        	
+        	@Override
+        	public void componentResized(ComponentEvent e) {
+        		newContentPane.previewPane.repaint();
+        	}
+        });
         frame.pack();
         frame.setSize(800, 600);
         frame.setVisible(true);
@@ -446,26 +455,39 @@ public class NewtonFractal2 extends JPanel implements ActionListener, PropertyCh
     		area.height = (int) Math.round(getHeight() * Math.min(1.0, 
     				((double) mainDimension.height)/buf.getHeight()));
     		
+    		if (area.width == getWidth())
+        		xpos = (mainDimension.width-buf.getWidth())/2;
+    		
+    		if (area.height == getHeight())
+        		ypos = (mainDimension.height-buf.getHeight())/2;
+    		
     		g.setColor(Color.red);
     		g.drawRect(area.x, area.y, area.width-1, area.height-1);
     		
     		// Draw the black border
     		g.setColor(Color.black);
     		g.drawRect(0, 0, getWidth()-1, getHeight()-1);
+    		
+    		// Repaint the main panel
+    		NewtonFractal2.this.repaint();
     	}
     	
     	@Override
 		public void mouseClicked(MouseEvent e) {
 			// On mouse click move the view port
-			Point p = e.getPoint();
-			
-			area.x = p.x - area.width/2;
-    		area.y = p.y - area.height/2;
+    		Point p = e.getPoint();
     		
-    		xpos = -(int) Math.round(mainDimension.width * 
-    				((double) area.x)/((double) area.width));
-    		ypos = -(int) Math.round(mainDimension.height *
-    				((double) area.y)/((double) area.height));
+    		if (area.width != getWidth()) {
+				area.x = p.x - area.width/2;
+				xpos = -(int) Math.round(mainDimension.width * 
+	    				((double) area.x)/((double) area.width));
+			}
+    		
+    		if (area.height != getHeight()) {
+    			area.y = p.y - area.height/2;
+        		ypos = -(int) Math.round(mainDimension.height *
+        				((double) area.y)/((double) area.height));
+    		}
     		
     		// Repaint everything
     		NewtonFractal2.this.repaint();

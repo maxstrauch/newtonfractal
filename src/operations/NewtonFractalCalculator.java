@@ -210,12 +210,13 @@ public class NewtonFractalCalculator extends SwingWorker<BufferedImage, Void> {
 	
 	@Override
 	public String toString() {
-		double steps = Math.round(totalSteps/((
+		long steps = Math.round(totalSteps/((
 				(ended < 0 ? System.currentTimeMillis() : ended)-started)/1000.0));
 		
 		return getProgress() + "% (" + Math.round(totalSteps)
 				+ " / " + Math.round(calculationSteps) + ") @ "
-				+ steps + " ops (" + size + " px)";
+				+ steps + " ops (" + size + " px) " + (ended > 0 ? 
+						(ended-started)/1000.0 + " s" : "");
 	}
 	
 }
